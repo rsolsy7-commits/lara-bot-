@@ -1,0 +1,16 @@
+module.exports = {
+  config: {
+    name: "الردود",
+    aliases: [],
+    version: "1.0",
+    author: "روريتا",
+    prefix: true,
+    category: "UTILITY",
+    description: "عرض الردود التلقائية",
+    guide: "{pn}"
+  },
+
+  onStart: async function({ api, event }) {
+    api.sendMessage("🤖 الردود التلقائية مفعّلة.\n(هذا أمر شكلي فقط)", event.threadID);
+  }
+};
