@@ -1,0 +1,19 @@
+module.exports = {
+  config: {
+    name: "الصلاة",
+    aliases: ["pray"],
+    version: "1.0",
+    author: "روريتا",
+    prefix: true,
+    category: "ISLAM",
+    description: "تذكير بالصلاة",
+    guide: "{pn}"
+  },
+
+  onStart: async function({ api, event }) {
+    api.sendMessage(
+      "⏰ لا تنسِ الصلاة…\nالفجر • الظهر • العصر • المغرب • العشاء",
+      event.threadID
+    );
+  }
+};
