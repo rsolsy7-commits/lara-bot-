@@ -1,0 +1,17 @@
+module.exports = {
+  config: {
+    name: "بيانات",
+    aliases: ["مدة_التشغيل"],
+    version: "1.0",
+    author: "روريتا",
+    prefix: true,
+    category: "OTHERS",
+    description: "عرض بيانات تشغيل البوت",
+    guide: "{pn}"
+  },
+
+  onStart: async function({ api, event }) {
+    const time = process.uptime();
+    api.sendMessage(`⏳ مدة التشغيل: ${Math.floor(time)} ثانية`, event.threadID);
+  }
+};
