@@ -1,0 +1,16 @@
+module.exports = {
+  config: {
+    name: "بادئة",
+    aliases: ["prefix", "Prefix", "الرمز"],
+    version: "1.0",
+    author: "روريتا",
+    prefix: true,
+    category: "UTILITY",
+    description: "عرض بادئة البوت",
+    guide: "{pn}"
+  },
+
+  onStart: async function({ api, event }) {
+    api.sendMessage("🔧 بادئة البوت الحالية هي: /\nيمكنك تغييرها من config.json", event.threadID);
+  }
+};
