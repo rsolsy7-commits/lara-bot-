@@ -1,0 +1,35 @@
+const axios = require("axios");
+const fs = require("fs");
+
+module.exports = {
+  config: {
+    name: "تصميم",
+    aliases: ["gfx", "جرافيك", "تصميم"],
+    version: "1.0",
+    author: "روريتا",
+    prefix: true,
+    category: "UTILITY",
+    description: "تصميم صورة عبر API",
+    guide: "{pn} نص"
+  },
+
+  onStart: async function({ api, event, args }) {
+    if (!args[0]) return api.sendMessage("اكتبي النص للتصميم.", event.threadID);
+
+    const text = args.join(" ");
+    api.sendMessage("🎨 جاري تصميم الصورة…", event.threadID);
+
+    try {
+      const img = await axios.get(`https://api.popcat.xyz/car?text=${encodeURIComponent(text)}`, { responseType: "arraybuffer" });
+
+      fs.writeFileSync("gfx.png", Buffer.from(img.data));
+      api.sendMessage(
+        { body: "✔️ تم التصميم:", attachment: fs.createReadStream("gfx.png") },
+        event.threadID,
+        () => fs.unlinkSync("gfx.png")
+      );
+    } catch {
+      api.sendMessage("❌ فشل التصميم.", event.threadID);
+    }
+  }
+};
