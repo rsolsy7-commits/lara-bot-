@@ -1,0 +1,23 @@
+module.exports = {
+  config: {
+    name: "آيات",
+    aliases: ["اية", "ayat"],
+    version: "1.0",
+    author: "روريتا روريتا",
+    prefix: true,
+    category: "ISLAM",
+    description: "آية قرآنية عشوائية",
+    guide: "{pn}"
+  },
+
+  onStart: async function({ api, event }) {
+    const ayat = [
+      "﴿ إِنَّ مَعَ الْعُسْرِ يُسْرًا ﴾",
+      "﴿ وَمَا تَوْفِيقِي إِلَّا بِاللَّهِ ﴾",
+      "﴿ فَاذْكُرُونِي أَذْكُرْكُمْ ﴾",
+      "﴿ ادْعُونِي أَسْتَجِبْ لَكُمْ ﴾"
+    ];
+    const pick = ayat[Math.floor(Math.random() * ayat.length)];
+    api.sendMessage("📖 آية اليوم:\n" + pick, event.threadID);
+  }
+};
