@@ -1,0 +1,24 @@
+module.exports = {
+  config: {
+    name: "قرآن",
+    aliases: ["quran", "سورة"],
+    version: "1.0",
+    author: "روريتا",
+    prefix: true,
+    category: "ISLAM",
+    description: "يعرض سورة قصيرة عشوائية",
+    guide: "{pn}"
+  },
+
+  onStart: async function({ api, event }) {
+    const surahs = [
+      "الفاتحة",
+      "الإخلاص",
+      "الفلق",
+      "الناس"
+    ];
+
+    const pick = surahs[Math.floor(Math.random() * surahs.length)];
+    api.sendMessage(`📖 سورة: ${pick}`, event.threadID);
+  }
+};
