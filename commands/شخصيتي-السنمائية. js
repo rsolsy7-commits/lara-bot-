@@ -1,0 +1,19 @@
+module.exports = {
+  config: {
+    name: "شخصيتي-السينمائية",
+    aliases: [],
+    version: "1.0",
+    author: "روريتا",
+    prefix: true,
+    category: "GAMES",
+    description: "يعطيك شخصية من فيلم",
+    guide: "{pn}"
+  },
+
+  onStart: async function({ api, event }) {
+    const chars = ["🦇 باتمان", "🕷️ سبايدرمان", "🧙‍♂️ غاندالف", "🧛‍♂️ دراكولا"];
+    const pick = chars[Math.floor(Math.random() * chars.length)];
+
+    api.sendMessage("🎬 شخصيتك السينمائية:\n" + pick, event.threadID);
+  }
+};
