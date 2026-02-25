@@ -1,0 +1,19 @@
+module.exports = {
+  config: {
+    name: "حقيقة-جرأة",
+    aliases: ["truth-dare"],
+    version: "1.0",
+    author: "روريتا",
+    prefix: true,
+    category: "GAMES",
+    description: "حقيقة أم جرأة",
+    guide: "{pn}"
+  },
+
+  onStart: async function({ api, event }) {
+    const list = ["حقيقة", "جرأة"];
+    const pick = list[Math.floor(Math.random() * list.length)];
+
+    api.sendMessage("🎲 اختيارك:\n" + pick, event.threadID);
+  }
+};
