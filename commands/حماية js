@@ -1,0 +1,136 @@
+const owner = "61562975344669"; // ID المالكة رسل / روريتا
+let protectOn = {};
+let groupSettings = {};
+
+module.exports = {
+  config: {
+    name: "حماية",
+    aliases: ["protect"],
+    version: "3.0",
+    author: "Rsol",
+    prefix: true,
+    category: "ADMIN",
+    description: "نظام حماية كامل للقروب",
+    guide: "{pn} تشغيل الكل | {pn} ايقاف"
+  },
+
+  onStart: async function({ api, event, args }) {
+    const thread = event.threadID;
+    const sender = event.senderID;
+
+    if (sender !== owner && !event.isGroupAdmin)
+      return api.sendMessage("❌ هذا الأمر للمالكة أو المشرفين فقط.", thread);
+
+    if (args.join(" ") === "تشغيل الكل") {
+      protectOn[thread] = true;
+
+      const info = await api.getThreadInfo(thread);
+      groupSettings[thread] = {
+        name: info.threadName,
+        image: info.imageSrc,
+        nicknames: info.nicknames,
+        emoji: info.emoji,
+        color: info.color,
+        description: info.threadDescription
+      };
+
+      return api.sendMessage("🛡️ تم تشغيل الحماية الكاملة يا روريتا ❤️", thread);
+    }
+
+    if (args[0] === "ايقاف") {
+      delete protectOn[thread];
+      return api.sendMessage("🛡️ تم إيقاف الحماية بالكامل.", thread);
+    }
+
+    return api.sendMessage("⚠️ استخدمي: حماية تشغيل الكل | حماية ايقاف", thread);
+  },
+
+  onEvent: async function({ api, event }) {
+    const thread = event.threadID;
+    if (!protectOn[thread]) return;
+
+    const sender = event.senderID;
+    const isAdmin = event.isGroupAdmin || sender === owner;
+
+    // منع تغيير اسم القروب
+    if (event.logMessageType === "log:thread-name" && !isAdmin) {
+      api.setTitle(groupSettings[thread].name, thread);
+      return api.sendMessage("😤☝🏻 لا تلعب بالاسم! رجّعته مثل ما كان.", thread);
+    }
+
+    // منع تغيير صورة القروب
+    if (event.logMessageType === "log:thread-image" && !isAdmin) {
+      api.changeGroupImage(groupSettings[thread].image, thread);
+      return api.sendMessage("😤☝🏻 رجّعت الصورة القديمة، لا تغيّر بدون إذن!", thread);
+    }
+
+    // منع تغيير الكنيات
+    if (event.logMessageType === "log:user-nickname" && !isAdmin) {
+      const { participant_id } = event.logMessageData;
+      const oldNick = groupSettings[thread].nicknames[participant_id] || "";
+      api.changeNickname(oldNick, thread, participant_id);
+      return api.sendMessage("😤 رجّعت اللقب… لا تغيّر كنيات الناس!", thread);
+    }
+
+    // منع تغيير الإيموجي الرسمي
+    if (event.logMessageType === "log:thread-icon" && !isAdmin) {
+      api.changeThreadEmoji(groupSettings[thread].emoji, thread);
+      return api.sendMessage("😤☝🏻 رجّعت الإيموجي… لا تغيّر رسميّات القروب!", thread);
+    }
+
+    // منع تغيير اللون
+    if (event.logMessageType === "log:thread-color" && !isAdmin) {
+      api.changeThreadColor(groupSettings[thread].color, thread);
+      return api.sendMessage("😒 رجّعت اللون… لا تغيّر الألوان بدون إذن!", thread);
+    }
+
+    // منع تغيير الوصف
+    if (event.logMessageType === "log:thread-description" && !isAdmin) {
+      api.changeThreadDescription(groupSettings[thread].description, thread);
+      return api.sendMessage("😤☝🏻 رجّعت الوصف… لا تعبث بوصف القروب!", thread);
+    }
+  },
+
+  onChat: async function({ api, event }) {
+    const thread = event.threadID;
+    if (!protectOn[thread]) return;
+
+    const sender = event.senderID;
+    const isAdmin = event.isGroupAdmin || sender === owner;
+    if (isAdmin) return;
+
+    const msg = event.body || "";
+
+    // منع الروابط
+    const linkPatterns = ["http", "www", ".com", ".net", ".org", "facebook.com/groups"];
+    if (linkPatterns.some(l => msg.toLowerCase().includes(l))) {
+      api.unsendMessage(event.messageID);
+      return api.sendMessage("🚫 ممنوع روابط هون! احترم المكان 😤", thread);
+    }
+
+    // منع الإعلانات
+    if (msg.includes("انضم") || msg.includes("تعال") || msg.includes("قروب")) {
+      api.unsendMessage(event.messageID);
+      return api.sendMessage("🚫 لا تعلن هون! 😒", thread);
+    }
+
+    // منع السبام (إيموجيات كثيرة)
+    const emojiCount = [...msg].filter(c => /\p{Emoji}/u.test(c)).length;
+    if (emojiCount >= 10) {
+      api.unsendMessage(event.messageID);
+      return api.sendMessage("😤☝🏻 خفّف إيموجيات يا عبقري!", thread);
+    }
+
+    // منع الرسائل الطويلة
+    if (msg.length >= 300) {
+      api.unsendMessage(event.messageID);
+      return api.sendMessage("😒 شو هالخطبة؟ قصّر رسالتك!", thread);
+    }
+
+    // منع الرموز المتكررة
+    if (/([!@#$%^&*()_+=?؟.,~<>/\\|])\1{5,}/.test(msg)) {
+      api.unsendMessage(event.messageID);
+      return api.sendMessage("😤 لا تغرق القروب بالرموز!", thread);
+    }
+  }
+};
